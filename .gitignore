@@ -1,0 +1,44 @@
+# === Secrets — NE JAMAIS COMMITTER ===
+.env
+.env.*
+!.env.example
+backend/.env
+backend/.env.*
+!backend/.env.example
+frontend/.env
+frontend/.env.*
+!frontend/.env.example
+*.key
+*.pem
+
+# === Python ===
+__pycache__/
+*.pyc
+*.egg-info/
+venv/
+.venv/
+backend/venv/
+backend/.pytest_cache/
+.pytest_cache/
+backend/.cache/
+
+# === Node / frontend ===
+node_modules/
+frontend/node_modules/
+dist/
+build/
+frontend/dist/
+
+# === ChromaDB (base vectorielle générée) ===
+chroma_db/
+chroma_db*/
+*.sqlite3
+
+# === Gros PDF sources (trop lourds pour git — à fournir hors dépôt) ===
+# Les .md/.log de data/ restent versionnés ; seuls les PDF sont ignorés.
+data/**/*.pdf
+
+# === OS / éditeurs ===
+.DS_Store
+.vscode/
+.idea/

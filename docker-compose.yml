@@ -1,0 +1,29 @@
+# Lancement optionnel de DBA-GPT via Docker Compose.
+# Prérequis : placer vos documents dans ./data et créer backend/.env (voir .env.example).
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    environment:
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - CLAUDE_MODEL=${CLAUDE_MODEL:-claude-sonnet-4-6}
+      - CHROMA_PATH=/app/chroma_db
+      - DATA_PATH=/app/data
+      - CORS_ORIGINS=http://localhost:5173
+    volumes:
+      - ./data:/app/data
+      - ./chroma_db:/app/chroma_db
+    # Ingestion puis démarrage de l'API.
+    command: >
+      sh -c "python scripts/ingest.py || true &&
+             uvicorn main:app --host 0.0.0.0 --port 8000"
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_URL=http://localhost:8000
+    depends_on:
+      - backend

@@ -1,0 +1,36 @@
+{
+  "description": "Jeu d'évaluation multilingue DBA-GPT (EN/FR/AR). answerable=false => hors domaine (le système DOIT s'abstenir).",
+  "questions": [
+    {"question": "What is a tablespace in Oracle?", "lang": "en", "answerable": true, "expected_files": ["oracle_tablespaces.md", "database-administrators-guide.pdf", "db-19c-architecture.pdf"]},
+    {"question": "How do I create a tablespace in Oracle?", "lang": "en", "answerable": true, "expected_files": ["oracle_tablespaces.md", "database-administrators-guide.pdf"]},
+    {"question": "What causes the ORA-01555 snapshot too old error?", "lang": "en", "answerable": true, "expected_files": ["oracle_undo_ora01555.md"]},
+    {"question": "How can I prevent ORA-01555 errors?", "lang": "en", "answerable": true, "expected_files": ["oracle_undo_ora01555.md"]},
+    {"question": "How does Oracle RMAN perform backups?", "lang": "en", "answerable": true, "expected_files": ["database-backup-and-recovery-reference.pdf"]},
+    {"question": "What is the System Global Area SGA?", "lang": "en", "answerable": true, "expected_files": ["db-19c-architecture.pdf", "database-administrators-guide.pdf", "database-performance-tuning-guide.pdf"]},
+    {"question": "What is Oracle Data Guard used for?", "lang": "en", "answerable": true, "expected_files": ["high-availability-overview-and-best-practices.pdf"]},
+    {"question": "How does VACUUM work in PostgreSQL?", "lang": "en", "answerable": true, "expected_files": ["postgresql_vacuum.md"]},
+    {"question": "What is autovacuum in PostgreSQL?", "lang": "en", "answerable": true, "expected_files": ["postgresql_vacuum.md"]},
+    {"question": "How can I improve PostgreSQL performance?", "lang": "en", "answerable": true, "expected_files": ["postgresql_performance.md"]},
+    {"question": "What does EXPLAIN ANALYZE show in PostgreSQL?", "lang": "en", "answerable": true, "expected_files": ["postgresql_performance.md"]},
+
+    {"question": "Qu'est-ce qu'un tablespace Oracle ?", "lang": "fr", "answerable": true, "expected_files": ["oracle_tablespaces.md", "database-administrators-guide.pdf", "db-19c-architecture.pdf"]},
+    {"question": "Comment résoudre l'erreur ORA-01555 ?", "lang": "fr", "answerable": true, "expected_files": ["oracle_undo_ora01555.md"]},
+    {"question": "Comment fonctionne la sauvegarde RMAN ?", "lang": "fr", "answerable": true, "expected_files": ["database-backup-and-recovery-reference.pdf"]},
+    {"question": "À quoi sert Oracle Data Guard ?", "lang": "fr", "answerable": true, "expected_files": ["high-availability-overview-and-best-practices.pdf"]},
+    {"question": "Comment fonctionne le VACUUM dans PostgreSQL ?", "lang": "fr", "answerable": true, "expected_files": ["postgresql_vacuum.md"]},
+    {"question": "Comment améliorer les performances de PostgreSQL ?", "lang": "fr", "answerable": true, "expected_files": ["postgresql_performance.md"]},
+    {"question": "Comment récupérer l'espace des lignes mortes en PostgreSQL ?", "lang": "fr", "answerable": true, "expected_files": ["postgresql_vacuum.md"]},
+
+    {"question": "ما هو الـ tablespace في Oracle؟", "lang": "ar", "answerable": true, "expected_files": ["oracle_tablespaces.md", "database-administrators-guide.pdf", "db-19c-architecture.pdf"]},
+    {"question": "ما سبب الخطأ ORA-01555؟", "lang": "ar", "answerable": true, "expected_files": ["oracle_undo_ora01555.md"]},
+    {"question": "كيف تعمل النسخ الاحتياطي باستخدام RMAN؟", "lang": "ar", "answerable": true, "expected_files": ["database-backup-and-recovery-reference.pdf"]},
+    {"question": "كيف يعمل VACUUM في PostgreSQL؟", "lang": "ar", "answerable": true, "expected_files": ["postgresql_vacuum.md"]},
+    {"question": "كيف أحسّن أداء PostgreSQL؟", "lang": "ar", "answerable": true, "expected_files": ["postgresql_performance.md"]},
+
+    {"question": "What is Lionel Messi?", "lang": "en", "answerable": false, "expected_files": []},
+    {"question": "How do I bake a chocolate cake?", "lang": "en", "answerable": false, "expected_files": []},
+    {"question": "Quelle est la capitale de la France ?", "lang": "fr", "answerable": false, "expected_files": []},
+    {"question": "من فاز بكأس العالم 2018؟", "lang": "ar", "answerable": false, "expected_files": []},
+    {"question": "How do I configure a MongoDB sharded cluster?", "lang": "en", "answerable": false, "expected_files": []}
+  ]
+}
