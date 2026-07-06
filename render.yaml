@@ -1,0 +1,42 @@
+# Déploiement Render — service web UNIQUE (backend FastAPI + frontend React buildé).
+# Le backend sert les API /api/* ET le build statique frontend/dist (fallback SPA).
+#
+# ⚠️  Ne définissez JAMAIS ANTHROPIC_API_KEY ici : `sync: false` = à saisir
+#     manuellement (et en secret) dans le dashboard Render.
+services:
+  - type: web
+    name: dba-gpt
+    env: python
+    plan: free
+    buildCommand: |
+      cd frontend && npm install && npm run build
+      cd ../backend && pip install -r requirements.txt
+      python scripts/ingest.py --reset
+    startCommand: |
+      cd backend && uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: CLAUDE_MODEL
+        value: claude-sonnet-4-6
+      - key: AVAILABLE_CLAUDE_MODELS
+        value: claude-sonnet-4-6,claude-sonnet-5
+      - key: DATA_PATH
+        value: "../data"
+      - key: CHROMA_PATH
+        value: "../chroma_db"
+      - key: EMBEDDING_MODEL
+        value: intfloat/multilingual-e5-base
+      - key: TOP_K
+        value: "5"
+      - key: RETRIEVER_TOP_K
+        value: "20"
+      - key: SIMILARITY_THRESHOLD
+        value: "0.70"
+      # Reranker désactivé par défaut sur Render Free pour économiser la RAM
+      # (le reranker charge un 2e modèle ~1 Go). Mettez "true" sur un plan payant.
+      - key: USE_RERANKER
+        value: "false"
+      # Évite le blocage du backend Xet de HuggingFace lors du téléchargement des modèles.
+      - key: HF_HUB_DISABLE_XET
+        value: "1"

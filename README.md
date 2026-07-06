@@ -266,41 +266,34 @@ docker compose up --build
 
 ## Déploiement
 
-Le **frontend** et le **backend** se déploient séparément.
+### Render — service UNIQUE (recommandé)
 
-### Frontend → Vercel
+Tout le projet dans **un seul Web Service** : le backend FastAPI sert les API
+`/api/*` **et** le frontend React buildé (`frontend/dist`), fallback SPA vers
+`index.html`. Le frontend appelle le **même domaine** (`VITE_API_BASE_URL` vide).
 
-Le frontend React (Vite) est un site statique.
+Guide complet, variables et limites Render Free : [`README_RENDER.md`](README_RENDER.md).
 
-1. Importez le repo dans Vercel, **Root Directory = `frontend`**.
-2. Build command : `npm run build` · Output : `dist` (auto-détecté par Vercel).
-3. Ajoutez la variable d'environnement du projet Vercel :
-
-   ```
-   VITE_API_BASE_URL=https://votre-backend.onrender.com
-   ```
-
-4. Le fichier [`frontend/vercel.json`](frontend/vercel.json) gère le routage SPA
-   (toutes les routes → `index.html`).
-
-> ⚠️ **Ne déployez PAS le backend sur Vercel** : ChromaDB a besoin d'un disque
-> persistant et d'un processus long, incompatibles avec le serverless Vercel.
-
-### Backend → Render / Railway / VPS
-
-Voir le guide complet : [`backend/README_DEPLOY.md`](backend/README_DEPLOY.md).
+- Blueprint : [`render.yaml`](render.yaml) (Render détecte et applique automatiquement).
+- Build : `npm run build` (frontend) → `pip install` → `ingest.py --reset` (ChromaDB).
+- Start : `uvicorn main:app --host 0.0.0.0 --port $PORT`.
+- Seul secret à saisir dans le dashboard Render : **`ANTHROPIC_API_KEY`** (`sync:false`).
 
 ```bash
-pip install -r requirements.txt
-python scripts/ingest.py --reset
-uvicorn main:app --host 0.0.0.0 --port $PORT
+# Simuler le mode Render en local (frontend servi par le backend, même port) :
+cd frontend && VITE_API_BASE_URL= npm run build
+cd ../backend && uvicorn main:app --host 0.0.0.0 --port 8000   # http://localhost:8000
 ```
 
-Variables requises : `ANTHROPIC_API_KEY`, `CLAUDE_MODEL`, `AVAILABLE_CLAUDE_MODELS`,
-`DATA_PATH`, `CHROMA_PATH`, et `CORS_ORIGINS` = URL Vercel du frontend.
+Vérifiez via `GET /api/health` (`rag_ready`, `chroma_ready`, `claude_model` ;
+aucun secret exposé).
 
-Vérifiez le déploiement via `GET /api/health` (`rag_ready`, `chroma_ready`,
-`claude_model` ; aucun secret exposé).
+### Alternative : Frontend Vercel + Backend séparé
+
+Possible aussi (frontend statique sur Vercel via [`frontend/vercel.json`](frontend/vercel.json)
+avec `VITE_API_BASE_URL=https://votre-backend`, backend sur Render/Railway/VPS —
+voir [`backend/README_DEPLOY.md`](backend/README_DEPLOY.md)). Le backend FastAPI +
+ChromaDB ne va **jamais** sur Vercel (serverless sans disque persistant).
 
 ## 🔒 Sécurité — NEVER COMMIT YOUR API KEY
 

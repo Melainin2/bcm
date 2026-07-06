@@ -1,9 +1,13 @@
-// URL du backend, configurable au build (Vercel : variable VITE_API_BASE_URL).
-// Priorité : VITE_API_BASE_URL > VITE_API_URL (ancien nom) > localhost:8000.
+// URL du backend, configurable au build.
+// - Déploiement Render en service unique : laisser VITE_API_BASE_URL vide ("")
+//   -> les requêtes /api/* pointent vers le MÊME domaine que le frontend.
+// - Dev local (frontend :5173, backend séparé) : définir VITE_API_BASE_URL
+//   (ex. http://localhost:8001) dans frontend/.env.
+// On utilise `??` (et non `||`) pour respecter une valeur vide explicite.
 const API_URL =
-  import.meta.env.VITE_API_BASE_URL ||
-  import.meta.env.VITE_API_URL ||
-  "http://localhost:8000";
+  import.meta.env.VITE_API_BASE_URL ??
+  import.meta.env.VITE_API_URL ??
+  "";
 
 export async function getHealth() {
   const res = await fetch(`${API_URL}/api/health`);

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+import os
 from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import Dict, List, Optional
@@ -11,6 +12,7 @@ import anthropic
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 import config
@@ -237,3 +239,48 @@ def get_file(source_path: str):
         raise HTTPException(status_code=404, detail="Fichier introuvable.")
     media = "application/pdf" if target.suffix.lower() == ".pdf" else None
     return FileResponse(str(target), media_type=media, filename=target.name)
+
+
+# --- Frontend statique (déploiement Render en service unique) ----------------
+# Le backend sert le build React (frontend/dist) sur le même domaine, avec un
+# fallback SPA vers index.html. Les routes /api/* ci-dessus ont la priorité car
+# elles sont déclarées AVANT ce montage. Si le build n'existe pas (dev local
+# sans build, tests), on n'ajoute rien : les endpoints API restent disponibles.
+_FRONTEND_DIST = Path(
+    os.getenv(
+        "FRONTEND_DIST",
+        str(Path(__file__).resolve().parent.parent / "frontend" / "dist"),
+    )
+).resolve()
+
+
+def _mount_frontend() -> None:
+    if not _FRONTEND_DIST.is_dir() or not (_FRONTEND_DIST / "index.html").is_file():
+        logger.warning(
+            "Build frontend introuvable (%s) : l'UI ne sera pas servie. "
+            "Lancez `cd frontend && npm run build`.",
+            _FRONTEND_DIST,
+        )
+        return
+
+    assets_dir = _FRONTEND_DIST / "assets"
+    if assets_dir.is_dir():
+        app.mount("/assets", StaticFiles(directory=str(assets_dir)), name="assets")
+
+    @app.get("/{full_path:path}", include_in_schema=False)
+    def serve_spa(full_path: str):
+        # Une requête /api/* non résolue ne doit pas renvoyer l'index HTML.
+        if full_path.startswith("api/") or full_path.startswith("api"):
+            raise HTTPException(status_code=404, detail="Not found")
+        # Fichier statique réel (favicon, vite.svg, etc.) : le servir directement.
+        if full_path:
+            candidate = (_FRONTEND_DIST / full_path).resolve()
+            if str(candidate).startswith(str(_FRONTEND_DIST)) and candidate.is_file():
+                return FileResponse(str(candidate))
+        # Sinon : fallback SPA (React Router) vers index.html.
+        return FileResponse(str(_FRONTEND_DIST / "index.html"))
+
+    logger.info("Frontend servi depuis %s", _FRONTEND_DIST)
+
+
+_mount_frontend()

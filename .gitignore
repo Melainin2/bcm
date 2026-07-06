@@ -29,14 +29,13 @@ dist/
 build/
 frontend/dist/
 
-# === ChromaDB (base vectorielle générée) ===
+# === ChromaDB (base vectorielle générée — JAMAIS committer, régénérée au build) ===
 chroma_db/
 chroma_db*/
 *.sqlite3
 
-# === Gros PDF sources (trop lourds pour git — à fournir hors dépôt) ===
-# Les .md/.log de data/ restent versionnés ; seuls les PDF sont ignorés.
-data/**/*.pdf
+# NB : les PDF de data/ (~72 Mo, < 100 Mo) SONT versionnés : Render en a besoin
+# au build pour lancer `python scripts/ingest.py --reset` et générer ChromaDB.
 
 # === OS / éditeurs ===
 .DS_Store
